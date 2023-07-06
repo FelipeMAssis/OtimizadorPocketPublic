@@ -397,4 +397,4 @@ with gr.Blocks(theme='soft') as demo:
     # export_button.click(demo_actions.export_drawing, inputs=results_output)
 
 # Launch the application
-demo.launch(inbrowser=True)#, auth=("admin", "12345678"))
+demo.launch(inbrowser=True)
