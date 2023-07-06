@@ -394,7 +394,7 @@ with gr.Blocks(theme='soft') as demo:
     
     firmeza_esperada_input.change(unlock_optimize, inputs=firmeza_esperada_input, outputs=[optimize_button, optimize_button_copy])
     
-    export_button.click(demo_actions.export_drawing, inputs=results_output)
+    # export_button.click(demo_actions.export_drawing, inputs=results_output)
 
 # Launch the application
 demo.launch(inbrowser=True)#, auth=("admin", "12345678"))
