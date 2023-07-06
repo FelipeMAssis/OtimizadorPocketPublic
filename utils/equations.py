@@ -76,7 +76,7 @@ def spring_rate(
     voltas_ativas,
     G
 ):
-    return 6*np.rand(1)[0]
+    return 6*np.random.rand(1)[0]
 
 def ild(
     altura,
@@ -90,7 +90,7 @@ def ild(
     manta,
     corr = True
 ):
-    return 40+(50)*np.rand(1)[0]
+    return 40+(50)*np.random.rand(1)[0]
 
 def tensoes(
     d,
@@ -100,7 +100,7 @@ def tensoes(
     k,
     molas_m
 ):
-    return 200+(200)*np.rand(1)[0], 30+(20)*np.rand(1)[0]
+    return 200+(200)*np.random.rand(1)[0], 30+(20)*np.random.rand(1)[0]
 
 
 def comprimento(
@@ -110,7 +110,7 @@ def comprimento(
     voltas_ativas,
     voltas
 ):
-    return 500+(600)*np.rand(1)[0]
+    return 500+(600)*np.random.rand(1)[0]
 
 def massa_mola(
     d_arame,
@@ -138,8 +138,8 @@ def custo_arame(
     voltas_barril,
     voltas_ativas,
     voltas,
-    custo_kg=4+np.rand(1)[0],
-    scrap=1+np.rand(1)[0],
+    custo_kg=4+np.random.rand(1)[0],
+    scrap=1+np.random.rand(1)[0],
     n=1
 ):
     massa = massa_mola(
