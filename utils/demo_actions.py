@@ -212,7 +212,6 @@ def optimize(
     else:
         solda = 'Dupla 25 mm'
         comp_solda = 25
-    # passo_min = np.ceil(comprimento*11*1000/(25.4*molas_comprimento))
     passo = int(11*(D_barril+comp_solda)/25.4)
     results_output = pd.DataFrame(
         {
@@ -239,9 +238,7 @@ def optimize(
                 'Comprimento de arame por mola (mm)',
                 'Comprimento de arame no molejo (m)',
                 'Massa por mola (g)',
-                'Massa de arame no molejo (kg)',
-                # 'Custo de arame por mola (R$)',
-                # 'Custo de arame no molejo (R$)'
+                'Massa de arame no molejo (kg)'
             ],
             'Mola atual':np.nan,
             'Mola otimizada':np.nan,
@@ -249,8 +246,6 @@ def optimize(
         }
     )
     results_output.set_index(' ', drop=False, inplace=True)
-    # constraints_df['Min'] = constraints_df['Min'].replace({'':-np.inf,np.nan:-np.inf})
-    # constraints_df['Max'] = constraints_df['Max'].replace({'':np.inf,np.nan:np.inf})
     flag_reducao=True
     if None in [altura, altura_livre, D_boca, voltas, voltas_barril]:
         x0 = [40, 0.8, 5, 0.7]
@@ -279,15 +274,6 @@ def optimize(
             voltas-voltas_inativas_i-voltas_inativas_f,
             voltas
         )
-        # custo = equations.custo_arame(
-        #     d_arame,
-        #     D_barril-d_arame,
-        #     D_boca-d_arame,
-        #     voltas_barril,
-        #     voltas-voltas_inativas_i-voltas_inativas_f,
-        #     voltas,
-        #     custo_kg
-        # )
         sr = equations.spring_rate(
             d_arame,
             D_barril+delta_barril-d_arame,
@@ -307,7 +293,6 @@ def optimize(
         ild = equations.ild(
             altura_livre+delta_altura,
             altura,
-            # D_barril+delta_barril-d_arame,
             D_boca+delta_boca-d_arame,
             sr,
             largura,
@@ -319,7 +304,6 @@ def optimize(
 
         comp_total = (comp*molas_comprimento*molas_largura)/1000
         massa_total = (massa*molas_comprimento*molas_largura)/1000
-        # custo_total = custo*molas_comprimento*molas_largura
 
         results_output['Mola atual'] = [
             f'{largura:.2f} x {comprimento:.2f}',
@@ -345,8 +329,6 @@ def optimize(
             f'{comp_total:.2f}',
             f'{massa:.1f}',
             f'{massa_total:.1f}',
-            # f'{custo:.2f}',
-            # f'{custo_total:.2f}'
         ]
     bounds = Bounds(
         [
@@ -362,7 +344,6 @@ def optimize(
             max_voltas_barril
         ]
     )
-    # bounds = Bounds(bounds_df.Min, bounds_df.Max)
     constraints = [
         NonlinearConstraint(
             optimization.ild,
@@ -396,16 +377,6 @@ def optimize(
                 max_d_boca if max_d_boca!=None else np.inf
             )
         )
-    # non_linear_funcs = [
-    #     optimization.sm,
-    #     optimization.sa,
-    #     optimization.pct_reduction,
-    #     optimization.passo_med,
-    #     optimization.boca
-    # ]
-    # for i, row in constraints_df.iterrows():
-    #     if row['Ativo']:
-    #         constraints.append(NonlinearConstraint(non_linear_funcs[i], row.Min, row.Max))
 
     fig_molejo = visualize_molejo(
         largura,
@@ -471,15 +442,6 @@ def optimize(
         voltas_otim-voltas_inativas_i-voltas_inativas_f,
         voltas_otim
     )
-    # custo_otim = equations.custo_arame(
-    #     d_arame,
-    #     D_barril-d_arame,
-    #     D_boca_otim-d_arame,
-    #     voltas_barril_otim,
-    #     voltas_otim-voltas_inativas_i-voltas_inativas_f,
-    #     voltas_otim,
-    #     custo_kg
-    # )
     sr_otim = equations.spring_rate(
         d_arame,
         D_barril+delta_barril-d_arame,
@@ -499,7 +461,6 @@ def optimize(
     ild_otim = equations.ild(
         altura_livre_otim+delta_altura,
         altura,
-        # D_barril+delta_barril-d_arame,
         D_boca_otim+delta_boca-d_arame,
         sr_otim,
         largura,
@@ -523,7 +484,6 @@ def optimize(
 
     comp_total_otim = (comp_otim*molas_comprimento*molas_largura)/1000
     massa_total_otim = (massa_otim*molas_comprimento*molas_largura)/1000
-    # custo_total_otim = custo_otim*molas_comprimento*molas_largura
 
     results_output['Mola otimizada'] = [
         f'{largura:.2f} x {comprimento:.2f}',
@@ -549,8 +509,6 @@ def optimize(
         f'{comp_total_otim:.2f}',
         f'{massa_otim:.1f}',
         f'{massa_total_otim:.1f}',
-        # f'{custo_otim:.2f}',
-        # f'{custo_total_otim:.2f}'
     ]
 
     if flag_reducao:
@@ -578,8 +536,6 @@ def optimize(
             f'{(comp_total_otim-comp_total):.2f} ({(comp_total_otim-comp_total)*100/comp_total:.0f} %)',
             f'{(massa_otim-massa):.1f} ({(massa_otim-massa)*100/massa:.0f} %)',
             f'{(massa_total_otim-massa_total):.1f} ({(massa_total_otim-massa_total)*100/massa_total:.0f} %)',
-            # f'{(custo_otim-custo):.2f} ({(custo_otim-custo)*100/custo:.0f} %)',
-            # f'{(custo_total_otim-custo_total):.2f} ({(custo_total_otim-custo_total)*100/custo_total:.0f} %)'
         ]
     else:
         massa_total = np.nan
@@ -596,28 +552,28 @@ def calcula_custo_anual(custo_kg, massa_atual, massa_otim, prod):
     return pd.DataFrame({'':['Mola atual','Mola otimizada','Redução de custo estimada'],'Unitário':[f'R$ {custo_atual:,.2f}', f'R$ {custo_otim:,.2f}', f'R$ {custo_atual-custo_otim:,.2f}'],'Anual':[f'R$ {custo_anual_atual:,.2f}', f'R$ {custo_anual_otim:,.2f}', f'R$ {dif:,.2f}']})
 
 
-def export_drawing(df):
+# def export_drawing(df):
 
-    df.set_index(' ', inplace=True)
+#     df.set_index(' ', inplace=True)
 
-    df_export = df[['Mola otimizada']].loc[[
-        'Altura livre (mm)',
-        'Altura ensacada (mm)',
-        'Diâmetro do arame (mm)',
-        'Diâmetro do barril (mm)',
-        'Diâmetro da boca (mm)',
-        'Voltas',
-        'Voltas com diâmetro constante no barril',
-        'Voltas inativas no início',
-        'Voltas inativas no fim',
-        'Spring Rate (N/pol)',
-        'Solda',
-        'Passo (pol)',
-        'Firmeza (kgf)'
-    ]]
+#     df_export = df[['Mola otimizada']].loc[[
+#         'Altura livre (mm)',
+#         'Altura ensacada (mm)',
+#         'Diâmetro do arame (mm)',
+#         'Diâmetro do barril (mm)',
+#         'Diâmetro da boca (mm)',
+#         'Voltas',
+#         'Voltas com diâmetro constante no barril',
+#         'Voltas inativas no início',
+#         'Voltas inativas no fim',
+#         'Spring Rate (N/pol)',
+#         'Solda',
+#         'Passo (pol)',
+#         'Firmeza (kgf)'
+#     ]]
 
-    df_export.to_clipboard(decimal=',', index=False, header=False)
+#     df_export.to_clipboard(decimal=',', index=False, header=False)
 
-    path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+#     path = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-    os.system(f"start EXCEL.EXE {path}\desenho.xlsm")
+#     os.system(f"start EXCEL.EXE {path}\desenho.xlsm")
